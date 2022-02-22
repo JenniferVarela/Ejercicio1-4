@@ -7,7 +7,7 @@
     tools:context=".ActivityListaFotos">
 
     <ListView
-        android:id="@+id/listaFotos"
+        android:id="@+id/list1"
         android:layout_width="409dp"
         android:layout_height="729dp"
         tools:layout_editor_absoluteX="1dp"

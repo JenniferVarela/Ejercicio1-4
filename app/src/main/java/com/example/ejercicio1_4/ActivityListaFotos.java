@@ -7,7 +7,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.example.ejercicio1_4.Clases.Persona;
 import com.example.ejercicio1_4.Condiguraciones.SQLiteConexion;
@@ -20,8 +26,8 @@ public class ActivityListaFotos extends AppCompatActivity {
     SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
     ImageView imageViewFoto;
     ArrayList<String> Arreglopersona;
-    ArrayList<Persona> listaPersonas;
-
+    private final ArrayList<Persona> listapersonas=new ArrayList<Persona>();
+    ImageView imageView1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +35,59 @@ public class ActivityListaFotos extends AppCompatActivity {
         setContentView(R.layout.activity_lista_fotos);
 
 
+        listapersonas.add(new Persona(22,"sdasd","asdsad", null));
+
+
+
+        AdaptadorPersonas adaptador = new AdaptadorPersonas(this);
+        ListView lv1 = findViewById(R.id.list1);
+        lv1.setAdapter(adaptador);
+        lv1.setAdapter(adaptador);
+
     }
 
 
+
+    class AdaptadorPersonas extends ArrayAdapter<Persona> {
+
+        AppCompatActivity appCompatActivity;
+
+        AdaptadorPersonas(AppCompatActivity context) {
+            super(context, R.layout.persona, listapersonas);
+            appCompatActivity = context;
+        }
+
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = appCompatActivity.getLayoutInflater();
+            View item = inflater.inflate(R.layout.persona, null);
+
+            imageView1 = item.findViewById(R.id.imageView);
+
+            SQLiteDatabase db = conexion.getWritableDatabase();
+
+            String sql = "SELECT foto FROM personas";
+            Cursor cursor = db.rawQuery(sql, new String[] {});
+            Bitmap bitmap = null;
+            if(cursor.moveToFirst()){
+                byte[] blob = cursor.getBlob(0);
+                ByteArrayInputStream bais = new ByteArrayInputStream(blob);
+                bitmap = BitmapFactory.decodeStream(bais);
+                imageView1.setImageBitmap(bitmap);
+
+
+
+
+            }
+            if (cursor != null && !cursor.isClosed()) {
+                cursor.close();
+            }
+            db.close();
+
+
+
+
+            return(item);
+        }
+    }
 
 }
