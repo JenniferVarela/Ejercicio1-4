@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.content.ContentValues;
@@ -12,7 +13,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
@@ -26,7 +29,11 @@ import com.example.ejercicio1_4.Condiguraciones.Transacciones;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -114,8 +121,39 @@ public class MainActivity extends AppCompatActivity {
 
         if(takepic.resolveActivity(getPackageManager()) != null)
         {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        "com.example.android.fileprovider2",
+                        photoFile);
+                takepic.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            }
             startActivityForResult(takepic,TAKE_PIC_REQUEST);
         }
+    }
+
+    String currentPhotoPath;
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -124,10 +162,18 @@ public class MainActivity extends AppCompatActivity {
 
         if(requestCode == TAKE_PIC_REQUEST && resultCode == RESULT_OK)
         {
-            Bundle extras = data.getExtras();
-            imagen = (Bitmap) extras.get("data");
-            foto.setImageBitmap(imagen);
+            galleryAddPic();
+            //Bundle extras = data.getExtras();
+            //imagen = (Bitmap) extras.get("data");
+            //foto.setImageBitmap(imagen);
         }
+    }
+
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(currentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        foto.setImageURI(contentUri);
     }
 
 
