@@ -67,7 +67,7 @@ public class ListarRegistros extends AppCompatActivity {
         intent.putExtra("codigo", persona.getId()+"");
         intent.putExtra("nombre",persona.getNombre());
         intent.putExtra("descripcion",persona.getDescripcion());
-        intent.putExtra("foto", (Parcelable) persona.getFoto());
+        //intent.putExtra("foto", (Parcelable) persona.getFoto());
 
         startActivity(intent);
 

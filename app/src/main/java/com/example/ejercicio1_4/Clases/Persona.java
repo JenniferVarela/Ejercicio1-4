@@ -6,12 +6,12 @@ public class Persona {
     private Integer id;
     private String nombre;
     private String descripcion;
-    private Blob foto;
+    private byte[] foto;
 
     public Persona() {
     }
 
-    public Persona(Integer id, String nombre, String descripcion, Blob foto) {
+    public Persona(Integer id, String nombre, String descripcion, byte[] foto) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.foto = foto;
@@ -41,11 +41,11 @@ public class Persona {
         this.descripcion = descripcion;
     }
 
-    public Blob getFoto() {
+    public byte[] getFoto() {
         return foto;
     }
 
-    public void setFoto(Blob foto) {
+    public void setFoto(byte[] foto) {
         this.foto = foto;
     }
 }

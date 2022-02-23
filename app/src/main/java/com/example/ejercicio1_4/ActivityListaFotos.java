@@ -39,26 +39,9 @@ public class ActivityListaFotos extends AppCompatActivity {
         String sql = "SELECT * FROM personas";
         Cursor cursor = db.rawQuery(sql, new String[] {});
 
-        /*
-        LayoutInflater inflater = appCompatActivity.getLayoutInflater();
-        View item = inflater.inflate(R.layout.persona, null);
-        imageView1 = item.findViewById(R.id.imageView);
-        Bitmap bitmap = null;
-
-        */
-
         while (cursor.moveToNext()){
             listapersonas.add(new Persona(cursor.getInt(0),cursor.getString(1),
-                    cursor.getString(2),null));
-
-            /*
-            byte[] blob = cursor.getBlob(3);
-            ByteArrayInputStream bais = new ByteArrayInputStream(blob);
-            bitmap = BitmapFactory.decodeStream(bais);
-
-            imageView1.setImageBitmap(bitmap);
-
-             */
+                    cursor.getString(2), cursor.getBlob(3)));
         }
 
 
@@ -71,7 +54,6 @@ public class ActivityListaFotos extends AppCompatActivity {
 
         AdaptadorPersonas adaptador = new AdaptadorPersonas(this);
         ListView lv1 = findViewById(R.id.list1);
-        lv1.setAdapter(adaptador);
         lv1.setAdapter(adaptador);
 
     }
@@ -103,10 +85,9 @@ public class ActivityListaFotos extends AppCompatActivity {
             Bitmap bitmap = null;
             TextView textView1 = item.findViewById(R.id.textView);
 
-
-            if(cursor.moveToNext()){
+            if (cursor.moveToNext()){
                 textView1.setText(listapersonas.get(position).getNombre());
-                byte[] blob = cursor.getBlob(3);
+                byte[] blob = listapersonas.get(position).getFoto();
                 ByteArrayInputStream bais = new ByteArrayInputStream(blob);
                 bitmap = BitmapFactory.decodeStream(bais);
                 imageView1.setImageBitmap(bitmap);
