@@ -26,16 +26,46 @@ public class ActivityListaFotos extends AppCompatActivity {
     SQLiteConexion conexion = new SQLiteConexion(this, Transacciones.NameDatabase, null, 1);
     ImageView imageViewFoto;
     ArrayList<String> Arreglopersona;
-    private final ArrayList<Persona> listapersonas=new ArrayList<Persona>();
+    private final ArrayList<Persona> listapersonas = new ArrayList<Persona>();
     ImageView imageView1;
+    AppCompatActivity appCompatActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_fotos);
 
+        SQLiteDatabase db = conexion.getWritableDatabase();
+        String sql = "SELECT * FROM personas";
+        Cursor cursor = db.rawQuery(sql, new String[] {});
 
-        listapersonas.add(new Persona(22,"sdasd","asdsad", null));
+        /*
+        LayoutInflater inflater = appCompatActivity.getLayoutInflater();
+        View item = inflater.inflate(R.layout.persona, null);
+        imageView1 = item.findViewById(R.id.imageView);
+        Bitmap bitmap = null;
+
+        */
+
+        while (cursor.moveToNext()){
+            listapersonas.add(new Persona(cursor.getInt(0),cursor.getString(1),
+                    cursor.getString(2),null));
+
+            /*
+            byte[] blob = cursor.getBlob(3);
+            ByteArrayInputStream bais = new ByteArrayInputStream(blob);
+            bitmap = BitmapFactory.decodeStream(bais);
+
+            imageView1.setImageBitmap(bitmap);
+
+             */
+        }
+
+
+        if (cursor != null && !cursor.isClosed()) {
+            cursor.close();
+        }
+        db.close();
 
 
 
@@ -65,29 +95,30 @@ public class ActivityListaFotos extends AppCompatActivity {
 
             SQLiteDatabase db = conexion.getWritableDatabase();
 
-            String sql = "SELECT foto FROM personas";
+            String sql = "SELECT * FROM personas";
+            Persona lista_Personas = null;
+
+
             Cursor cursor = db.rawQuery(sql, new String[] {});
             Bitmap bitmap = null;
-            if(cursor.moveToFirst()){
-                byte[] blob = cursor.getBlob(0);
+            TextView textView1 = item.findViewById(R.id.textView);
+
+
+            if(cursor.moveToNext()){
+                textView1.setText(listapersonas.get(position).getNombre());
+                byte[] blob = cursor.getBlob(3);
                 ByteArrayInputStream bais = new ByteArrayInputStream(blob);
                 bitmap = BitmapFactory.decodeStream(bais);
                 imageView1.setImageBitmap(bitmap);
-
-
-
-
             }
             if (cursor != null && !cursor.isClosed()) {
                 cursor.close();
             }
             db.close();
 
-
-
-
             return(item);
         }
     }
+
 
 }
