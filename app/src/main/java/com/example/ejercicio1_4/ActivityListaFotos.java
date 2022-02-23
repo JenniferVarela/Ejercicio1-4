@@ -2,6 +2,7 @@ package com.example.ejercicio1_4;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -10,6 +11,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -29,6 +31,8 @@ public class ActivityListaFotos extends AppCompatActivity {
     private final ArrayList<Persona> listapersonas = new ArrayList<Persona>();
     ImageView imageView1;
     AppCompatActivity appCompatActivity;
+    ListView list1;
+    ArrayList<Persona> listaPersonas = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,48 @@ public class ActivityListaFotos extends AppCompatActivity {
         AdaptadorPersonas adaptador = new AdaptadorPersonas(this);
         ListView lv1 = findViewById(R.id.list1);
         lv1.setAdapter(adaptador);
+
+        list1 = findViewById(R.id.list1);
+        list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println(i);
+                obtenerFotos(i);
+
+
+
+            }
+        });
+
+
+    }
+
+    private void obtenerFotos( int id) {
+        SQLiteDatabase db = conexion.getReadableDatabase();
+        Persona lista_Personas = null;
+        listaPersonas = new ArrayList<Persona>();
+
+        Cursor cursor = db.rawQuery("SELECT * FROM " + Transacciones.tblPersonas,null);
+
+        while (cursor.moveToNext())
+        {
+            lista_Personas = new Persona();
+            lista_Personas.setId(cursor.getInt(0));
+            lista_Personas.setNombre(cursor.getString(1));
+            lista_Personas.setDescripcion(cursor.getString(2));
+            listaPersonas.add(lista_Personas);
+        }
+        cursor.close();
+        Persona persona = listaPersonas.get(id);
+
+        Intent intent = new Intent(getApplicationContext(),ActivityMostrarRegistro.class);
+
+        intent.putExtra("codigo", persona.getId()+"");
+        intent.putExtra("nombre",persona.getNombre());
+        intent.putExtra("descripcion",persona.getDescripcion());
+        //intent.putExtra("foto", (Parcelable) persona.getFoto());
+
+        startActivity(intent);
 
     }
 
